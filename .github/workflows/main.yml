@@ -41,7 +41,10 @@ jobs:
         port: 22
         script: |
           cd ${{ secrets.SERVER_DIRECTORY }}
-          # Kill the current FastAPI application process
-          pkill -f "python3 main.py"
+          # Gracefully stop the FastAPI application
+          pkill -f "python3 main.py" || true
+          # Ensure the process has stopped before restarting
+          sleep 5
           # Restart the FastAPI application
           nohup python3 main.py > app.log 2>&1 &
+          
