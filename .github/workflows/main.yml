@@ -32,7 +32,7 @@ jobs:
         port: 22
         source: "."
         target: ${{ secrets.SERVER_DIRECTORY }}
-    - name: Restart FastAPI app
+    - name: Restart FastAPI app with PM2
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
@@ -41,10 +41,5 @@ jobs:
         port: 22
         script: |
           cd ${{ secrets.SERVER_DIRECTORY }}
-          # Gracefully stop the FastAPI application
-          pkill -f "python3 main.py" || true
-          # Ensure the process has stopped before restarting
-          sleep 5
-          # Restart the FastAPI application
-          nohup python3 main.py > app.log 2>&1 &
-          
+          # Gracefully reload the FastAPI application to apply the latest changes
+          pm2 reload fastapi_cicd_app
